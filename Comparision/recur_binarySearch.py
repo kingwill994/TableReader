@@ -1,9 +1,6 @@
 import pandas as pd
 
-### import data
-df = pd.read_csv('atmProp_englishLabel.csv')
-label = 'atm'
-target = 1250
+
 
 #####  PREDICTION FUNCTIONS  ########
 def interp(df, targetLabel, targetValue, up, down):
@@ -105,7 +102,14 @@ def BinarySearch(df, targetLabel, targetValue):
     
     
 
-    
+
+### import data
+atm = pd.read_csv('atmProp_englishLabel.csv')
+label = 'atm'
+target = 1000
+
+
+
 
             
             
@@ -127,7 +131,7 @@ def BinarySearch(df, targetLabel, targetValue):
 #print(a['alt'])
 #print((df.iloc[2])['alt'])
 
-a = len(df)
-print(a)
-print(df.iloc[a-1])
+#a = len(df)
+#print(a)
+#print(df.iloc[a-1])
 
