@@ -4,7 +4,8 @@ import pandas as pd
 
 #####  PREDICTION FUNCTIONS  ########
 def interp(df, targetLabel, targetValue, up, down):
-    return 0
+    print('interpolate')
+    return 5
 
 def extrapol(df, targetLabel, targetValue):
     return 0
@@ -12,10 +13,10 @@ def extrapol(df, targetLabel, targetValue):
 
 ##### RECURSIVR BINARY SEARCH #######
 def find(df, targetLabel, targetValue):
-    n = df.size
+    n = len(df) - 1
     up = n
     down = 0
-    ind = round(n/2, 0)
+    ind = int(round(n/2, 0))
     out = []
 
     # check if targetValue is outside of dataTable
@@ -26,16 +27,16 @@ def find(df, targetLabel, targetValue):
     downValue = downRow[targetLabel]
 
     if upValue < targetValue or downValue > targetValue:
-        extrapol(df, targetLabel, targetValue) 
+        return extrapol(df, targetLabel, targetValue) 
     
-    recurBinSea(df, targetLabel, targetValue, up, down, ind, out)
+    return recurBinSea(df, targetLabel, targetValue, up, down, ind, out)
 
 
 def recurBinSea(df, targetLabel, targetValue, up, down, ind, out):
-
+    print(ind)
     if len(out) == 0:
-        valueRow = df.iloc[ind]
-        value = valueRow[targetLabel]
+        valueRow = df.iloc[[ind]]
+        value = float(valueRow[targetLabel])
         if value > targetValue:
             up = ind
         elif value < targetValue:
@@ -44,18 +45,19 @@ def recurBinSea(df, targetLabel, targetValue, up, down, ind, out):
             out = [value]
         
         indRange = abs(up-down)
-        ind = down + round(indRange/2, 0)
+        ind = int(down + round(indRange/2, 0))
 
         if indRange == 1:
             out = [up,down]
         
-        recurBinSea(df, targetLabel, targetValue, up, down, ind, out)
+        return recurBinSea(df, targetLabel, targetValue, up, down, ind, out)
     
     else:
         if len(out) == 2:
-            interp(df, targetLabel, targetValue, up, down)
+            return interp(df, targetLabel, targetValue, up, down)
         else:
-            return df.iloc[ind]
+            print(df.iloc[[ind]])
+            return df.iloc[[ind]]
 
 
 
@@ -65,7 +67,7 @@ def BinarySearch(df, targetLabel, targetValue):
     n = len(df) - 1
     up = n
     down = 0
-    ind = round(n/2,0)
+    ind = (round(n/2,0))
     out = []
 
     # check if targetValue is outside of dataTable
@@ -76,12 +78,13 @@ def BinarySearch(df, targetLabel, targetValue):
     downValue = downRow[targetLabel]
 
     if upValue < targetValue or downValue > targetValue:
-        extrapol(df, targetLabel, targetValue,)
+        return extrapol(df, targetLabel, targetValue,)
 
     #interpolation section
     while len(out) == 0:
-        valueRow = df.iloc[ind]
-        value = valueRow[targetLabel]
+        valueRow = df.iloc[[ind]]   #weird fix with double bracket but works -->requires float conversion
+        #print(valueRow)
+        value = float(valueRow[targetLabel])
         if value > targetValue:
             up = ind
         elif value < targetValue:
@@ -90,27 +93,33 @@ def BinarySearch(df, targetLabel, targetValue):
             out = [ind]
         
         indRange = abs(up-down)
-        ind = down + round(indRange/2, 0)
+        print('up: ', up)
+        print('down: ', down)
+        print('diff: ', indRange)
+        ind = int(down + round(indRange/2, 0))
 
         if indRange == 1:
             out = [up,down]
 
     if len(out) == 2:
-        interp(df, targetLabel, targetValue, up, down)
+        return interp(df, targetLabel, targetValue, up, down)
     else:
-        return df.iloc[ind]
+        return df.iloc[[ind]]   #same weird error 
     
     
 
+def main():
+    ### import data
+    atm = pd.read_csv('atmProp_englishLabel.csv')
+    label = 'alt'
+    target = 1000
 
-### import data
-atm = pd.read_csv('atmProp_englishLabel.csv')
-label = 'atm'
-target = 1000
+    #data = BinarySearch(atm, label, target)
+    data = find(atm, label, target)
+    #print(type(data))
+    print(data)
 
-
-
-
+main()
             
             
 ###### Preliminary testing of pd mechanics ######
