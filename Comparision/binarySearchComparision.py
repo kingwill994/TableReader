@@ -1,11 +1,38 @@
 import pandas as pd
+import numpy as np
 
-
+#### TO-DO ####
+#tried built in pandas interpolation but couldn't get it to get values in relation to the altitude
+#will build out method manually and test it next time
 
 #####  PREDICTION FUNCTIONS  ########
 def interp(df, targetLabel, targetValue, up, down):
-    print('interpolate')
+    df_shape = df.shape
+    df_down = df.iloc[[down]]
+    df_up = df.iloc[[up]]
+    cols = (df.columns)
+    df_find = pd.DataFrame([[np.nan]*df_shape[1]], columns = cols)
+    df_find[targetLabel] = targetValue
+    data = pd.concat([df_down, df_find, df_up])
+    print(data)
+    interp = data.interpolate(method = 'linear', limit_direction = 'forward', axis = 0)
+    print(interp)
+
+    return 0
+    """
+    data_shape = data.shape
+
+    for i in range(data_shape[1]):
+        temp = data.iloc[:,i]
+        
+        print(type(temp))
+        print(temp)
+        print(data.iloc[:,i])
+    
+    print(data)
+    #print(type(data))
     return 5
+    """
 
 def extrapol(df, targetLabel, targetValue):
     return 0
@@ -63,7 +90,7 @@ def recurBinSea(df, targetLabel, targetValue, up, down, ind, out):
 
 
 #### ITERATIVE BINARY SEARCH ####
-def BinarySearch(df, targetLabel, targetValue):
+def iterBinSea(df, targetLabel, targetValue):
     n = len(df) - 1
     up = n
     down = 0
@@ -93,9 +120,6 @@ def BinarySearch(df, targetLabel, targetValue):
             out = [ind]
         
         indRange = abs(up-down)
-        print('up: ', up)
-        print('down: ', down)
-        print('diff: ', indRange)
         ind = int(down + round(indRange/2, 0))
 
         if indRange == 1:
@@ -112,35 +136,10 @@ def main():
     ### import data
     atm = pd.read_csv('atmProp_englishLabel.csv')
     label = 'alt'
-    target = 1000
+    target = 1250
 
-    #data = BinarySearch(atm, label, target)
-    data = find(atm, label, target)
-    #print(type(data))
-    print(data)
+    data = iterBinSea(atm, label, target)
+    #data = find(atm, label, target)
+    #print(data)
 
 main()
-            
-            
-###### Preliminary testing of pd mechanics ######
-#print(df)
-#print(df['alt'])
-#a = df.iloc[3]
-#print(df.head())
-#cols = df.columns
-#print(type(cols))
-#print(cols[1])
-#print(a['alt'])
-#print(df.iloc[3].shape)
-#print(df.iloc[3,3])
-
-#print(df.size)
-#print(df.iloc[2])
-#a = df.iloc[2]
-#print(a['alt'])
-#print((df.iloc[2])['alt'])
-
-#a = len(df)
-#print(a)
-#print(df.iloc[a-1])
-

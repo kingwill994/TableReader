@@ -7,3 +7,10 @@ def findValue(a):
 
 x = findValue(7)
 print(x)
+
+b = [1]
+print(b*7)
+
+import numpy as np
+
+print([np.nan]*7)
