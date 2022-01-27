@@ -4,9 +4,12 @@ import numpy as np
 #### TO-DO ####
 #tried built in pandas interpolation but couldn't get it to get values in relation to the altitude
 #will build out method manually and test it next time
+#extrapolation trigger needs to be rewritten to properly execute when relation is inverse to index progression
+    #\-> if up > down do something; elif up < down do something :: where something is the actualy algorithm
+#interpolation with radius
 
 #####  PREDICTION FUNCTIONS  ########
-def interp(df, targetLabel, targetValue, up, down):
+def interp_builtIn(df, targetLabel, targetValue, up, down):
     df_shape = df.shape
     df_down = df.iloc[[down]]
     df_up = df.iloc[[up]]
@@ -16,23 +19,24 @@ def interp(df, targetLabel, targetValue, up, down):
     data = pd.concat([df_down, df_find, df_up])
     print(data)
     interp = data.interpolate(method = 'linear', limit_direction = 'forward', axis = 0)
-    print(interp)
+    #not returning corresponding values in relation to targetLabel
+    return interp.iloc[[1]]
 
-    return 0
-    """
-    data_shape = data.shape
+def interp(df, targetLabel, targetValue, up, down):
+    data = df.iloc[[down,up]]
+    dataDict = data.to_dict('list')
+    features = list(dataDict.keys())
+    features.pop(features.index(targetLabel))
 
-    for i in range(data_shape[1]):
-        temp = data.iloc[:,i]
-        
-        print(type(temp))
-        print(temp)
-        print(data.iloc[:,i])
-    
-    print(data)
-    #print(type(data))
-    return 5
-    """
+    x = targetValue
+    x1 = up
+    x2 = down
+    stor = {} 
+    for feat in features:
+        y1, y2 = dataDict.get(feat)
+        y = y1 + (x-x1) * (y2-y1)/(x2-x1)
+        stor[feat] = [y]
+    return pd.DataFrame.from_dict(stor)
 
 def extrapol(df, targetLabel, targetValue):
     return 0
@@ -49,24 +53,30 @@ def find(df, targetLabel, targetValue):
     # check if targetValue is outside of dataTable
     upRow = df.iloc[up]
     upValue = upRow[targetLabel]
+    print(upValue)
+    print(upRow)
 
     downRow = df.iloc[down]
     downValue = downRow[targetLabel]
 
+    #extrapolation trigger needs to be rewritten to properly execute when relation is inverse to index progression
+    """
     if upValue < targetValue or downValue > targetValue:
         return extrapol(df, targetLabel, targetValue) 
     
     return recurBinSea(df, targetLabel, targetValue, up, down, ind, out)
-
+    """
 
 def recurBinSea(df, targetLabel, targetValue, up, down, ind, out):
-    print(ind)
+    #print(ind)
     if len(out) == 0:
         valueRow = df.iloc[[ind]]
         value = float(valueRow[targetLabel])
         if value > targetValue:
             up = ind
+            print('up', up)
         elif value < targetValue:
+            print('down', down)
             down = ind
         elif value == targetValue:
             out = [value]
@@ -83,7 +93,6 @@ def recurBinSea(df, targetLabel, targetValue, up, down, ind, out):
         if len(out) == 2:
             return interp(df, targetLabel, targetValue, up, down)
         else:
-            print(df.iloc[[ind]])
             return df.iloc[[ind]]
 
 
@@ -114,8 +123,10 @@ def iterBinSea(df, targetLabel, targetValue):
         value = float(valueRow[targetLabel])
         if value > targetValue:
             up = ind
+            print('up', up)
         elif value < targetValue:
             down = ind
+            print('down', down)
         elif value == targetValue:
             out = [ind]
         
@@ -135,11 +146,11 @@ def iterBinSea(df, targetLabel, targetValue):
 def main():
     ### import data
     atm = pd.read_csv('atmProp_englishLabel.csv')
+    print(atm.columns)
     label = 'alt'
-    target = 1250
-
+    target = 1200
     data = iterBinSea(atm, label, target)
     #data = find(atm, label, target)
-    #print(data)
+    print(data)
 
 main()
