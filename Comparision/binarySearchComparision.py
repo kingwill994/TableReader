@@ -8,6 +8,19 @@ import numpy as np
     #\-> if up > down do something; elif up < down do something :: where something is the actualy algorithm
 #interpolation with radius
 
+### PREPROCESSING
+def directionFinder(upValue, downValue):
+    #used to determine whether or not the value of the target lable is increasing or decreasing
+    #returns a direction scalar which can be used to run the same algorithms just by modifying the up, down, and targetValue
+
+    if upValue > downValue:
+        direction = 1
+    elif upValue < downValue:
+        direction = -1
+    else:
+        print("There exists at least one peak")
+    return direction
+
 #####  PREDICTION FUNCTIONS  ########
 def interp_builtIn(df, targetLabel, targetValue, up, down):
     df_shape = df.shape
@@ -53,19 +66,22 @@ def find(df, targetLabel, targetValue):
     # check if targetValue is outside of dataTable
     upRow = df.iloc[up]
     upValue = upRow[targetLabel]
-    print(upValue)
-    print(upRow)
 
     downRow = df.iloc[down]
     downValue = downRow[targetLabel]
 
+    direction = directionFinder(upValue, downValue)
+    print(direction)
+
+    #transform targetValue, upValue, and downValue
+    
+
     #extrapolation trigger needs to be rewritten to properly execute when relation is inverse to index progression
-    """
     if upValue < targetValue or downValue > targetValue:
         return extrapol(df, targetLabel, targetValue) 
     
     return recurBinSea(df, targetLabel, targetValue, up, down, ind, out)
-    """
+    
 
 def recurBinSea(df, targetLabel, targetValue, up, down, ind, out):
     #print(ind)
@@ -149,8 +165,8 @@ def main():
     print(atm.columns)
     label = 'alt'
     target = 1200
-    data = iterBinSea(atm, label, target)
-    #data = find(atm, label, target)
+    #data = iterBinSea(atm, label, target)
+    data = find(atm, label, target)
     print(data)
 
 main()
